@@ -1,0 +1,29 @@
+{
+  "name": "oun1982",
+  "version": "1.0.0",
+  "description": "Test_node_MariaDB",
+  "main": "test.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ami-io": "^1.0.1",
+    "asterisk-ami": "^0.1.0",
+    "asterisk-ami-client": "^1.0.5",
+    "asterisk.io": "^0.1.1",
+    "install": "^0.8.2",
+    "ip": "^1.1.4",
+    "javascripting": "^2.6.1",
+    "learnyounode": "^3.5.8",
+    "log4js": "^1.0.1",
+    "mariasql": "^0.2.6",
+    "nami": "^0.7.2",
+    "node-mariadb": "^0.1.1",
+    "npm": "^4.0.3",
+    "shelljs": "^0.7.5",
+    "simple-ssh": "^0.9.0",
+    "socket.io": "^1.7.1"
+  }
+}
