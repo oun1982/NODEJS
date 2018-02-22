@@ -1,0 +1,1054 @@
+##############################################BEGIN############################################
+
+****************************************************************
+*Note: xx = version 
+*          Please replace by version number
+****************************************************************
+
+CentOS
+      
+      Install Page
+          Check "Desktop-Gnome" and "Server"
+          Choice "Customize Now"
+
+      	  Development -> Check All
+	
+          Server ->Need MySql and Web Server
+
+	java -> Check All
+
+Install Package
+
+      #yum -y install mysql-devel php-pear php-mysql java ntp net-snmp net-snmp-libs
+
+Off update automatic
+	#chkconfig --level 2345 yum-updatesd off
+
+Diable SELINUX
+	#vi /etc/selinux/config
+		SELINUX=disabled
+	
+
+Copy source file to /usr/src/asterisk folder
+	#scp -r root@192.168.1.220:/usr/src/asterisk /usr/src
+
+another port use : Example server use port 10023
+	#scp -r -P 10023 root@192.168.1.220:/usr/src/asterisk /usr/src
+
+Install zaptel
+
+	#cd /usr/src/asterisk/zaptel-1.4.6
+	#./configure
+	#make clean
+	#make
+	#make install
+	#make config
+#####################################Improve_Zaptel########################################
+
+vim /usr/src/asterisk/zaptel-1.4.6/xpp/xdefs.h
+
+แก้บรรทัด
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,19)
+
+เป็น
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,17)
+
+########################################################################################
+
+Install libpri
+
+	#cd /usr/src/asterisk/libpri-1.4.1
+	#make clean
+	#make
+	#make install
+	
+Create asterisk group and  user
+
+	#groupadd asterisk
+	#useradd -c "asterisk PBX" -d /var/lib/asterisk -g asterisk asterisk
+
+Create asteirsk run folder
+
+         #mkdir /var/run/asterisk
+		
+Install asterisk
+
+	#cd /usr/src/asterisk/asterisk-1.4.21.2
+	#./configure
+	#make clean
+	#make
+	#make install
+
+Install asterisk-addons
+
+	#cd /usr/src/asterisk/asterisk-addons-1.4.7
+	#perl -p -i.bak -e 's/CFLAGS.*D_GNU_SOURCE/CFLAGS+=-D_GNU_SOURCE\nCFLAGS+=-DMYSQL_LOGUNIQUEID/' Makefile
+	#./configure
+              #make clean
+	#make
+	#make install
+	
+
+Setup Database for Freepbx
+
+	#/usr/bin/mysql_install_db
+	#/etc/init.d/mysqld start
+
+	#mysqladmin -u root password 'password'
+	#mysqladmin create asteriskcdrdb -ppassword
+	#mysql --user=root --password=password asteriskcdrdb < /usr/src/asterisk/freepbx-2.8.0/SQL/cdr_mysql_table.sql
+	
+	#mysqladmin create asterisk -ppassword
+	#mysql -uroot -ppassword asterisk < /usr/src/asterisk/freepbx-2.8.0/SQL/newinstall.sql
+
+	
+Grant Database user
+
+	#mysql -uroot -ppassword
+
+		mysql> GRANT ALL PRIVILEGES ON asteriskcdrdb.* TO asteriskuser@localhost IDENTIFIED BY 'password';
+
+		mysql> GRANT ALL PRIVILEGES ON asterisk.* TO asteriskuser@localhost IDENTIFIED BY 'password';
+		
+		mysql> exit
+
+Install FreePBX
+
+	#asterisk -gvvvvvvv
+
+	Open another terminal
+
+	#pear install DB
+	#cd /usr/src/asterisk/freepbx-2.8.0
+	#./install_amp
+
+        ##############################################
+	Enter like this
+
+	Enter your USERNAME to connect to the 'asterisk' database:
+	 [asteriskuser] <ENTER>
+	Enter your PASSWORD to connect to the 'asterisk' database:
+	 [amp109] password<ENTER>
+	Enter the hostname of the 'asterisk' database:
+	 [localhost] <ENTER>
+	Enter a USERNAME to connect to the Asterisk Manager interface:
+	 [admin] <ENTER>
+	Enter a PASSWORD to connect to the Asterisk Manager interface:
+	 [amp111] password<ENTER>
+	Enter the path to use for your AMP web root:
+	 [/var/www/html] <ENTER>
+	Enter the IP ADDRESS or hostname used to access the AMP web-admin:
+	 [xx.xx.xx.xx] 192.168.0.xx<ENTER>
+	Enter a PASSWORD to perform call transfers with the Flash Operator Panel:
+	 [passw0rd] password<ENTER>
+	Use simple Extensions [extensions] admin or separate Devices and Users [deviceanduser]?
+	 [extensions] <ENTER>
+	Enter directory in which to store AMP executable scripts:
+	 [/var/lib/asterisk/bin] <ENTER>
+	Created /var/lib/asterisk/bin
+	Enter directory in which to store super-user scripts:
+	 [/usr/local/sbin] <ENTER>
+
+        ###############################################
+
+	Close asterisk in first terminal
+		press ctrl+c
+
+
+Config Apache
+
+	#vim /etc/httpd/conf/httpd.conf
+
+	 Find "User" and "Group" and change from "apache" to "asterisk"
+	 
+		User asterisk
+		Group asterisk
+		
+Change php session owner
+
+	#chown asterisk /var/lib/php/session
+
+		
+Set Auto Start
+	
+	#chkconfig --level 3 httpd on
+	#chkconfig --level 3 mysqld on
+	#chkconfig --level 3 ntpd on
+	#chkconfig --level 3 snmpd on
+	#service httpd restart
+
+Disable FOP
+	#vim /etc/amportal.conf
+	FOPRUN=true  <<  FOPRUN=false
+
+Start Asterisk
+ 
+	#amportal start
+
+Check
+	Console
+		#asterisk -r
+		should show CLI>
+		ถ้าไมได้ลอง reboot เครื่อง
+
+	Web
+	        http://ipaddress/admin
+		should show FreePBX page
+
+Update FreePBX module
+       
+         Module Admin -> Check for updates online
+
+	Select Download
+		Queues
+		IVR
+		Other as you want
+
+Edit Asterisk config
+
+	#vim /etc/asterisk/asterisk.conf 
+
+	Add under [options]
+
+		internal_timing=yes
+	
+	#amportal restart
+
+
+##############################################END############################################
+
+############################################# Goldfish ############################################
+Goldfish
+
+copy folder goldfish จากเครื่อง demo ไปได้เลย 
+
+Folder ที่ต้อง copy ไป
+/usr/goldfish
+/var/www/html/goldfish
+
+#scp -r root@192.168.1.220:/usr/goldfish /usr
+#scp -r root@192.168.1.220:/var/www/html/goldfish /var/www/html
+
+Database
+export database จากเครื่อง demo
+#mysqldump -uroot -ppassword goldfish > /tmp/goldfish.sql
+
+copy file /tmp/goldfish.sql ไปที่เครื่องใหม่
+#scp -r root@192.168.1.220:/tmp/goldfish.sql /tmp
+
+สร้าง database เครื่องใหม่
+#mysql -uroot -ppassword
+mysql> create database goldfish;
+mysql> exit;
+
+import database เครื่องใหม่
+#mysql -uroot -ppassword goldfish < /tmp/goldfish.sql
+
+start goldfish
+/usr/goldfish/goldfish start
+
+ลองเข้าหน้า web
+http://ipaddress/goldfish
+
+############################################## Update ################################################
+                                                           ===>Database update ไม่มี record ขาเข้า<===
+#mysql -uroot -ppassword
+mysql>use goldfish;
+mysql>ALTER TABLE `agenttraffic` MODIFY COLUMN `channel` VARCHAR(50);
+mysql>ALTER TABLE `queuetraffic` MODIFY COLUMN `channel` VARCHAR(50);
+mysql>exit;
+
+                                                      ===>เปลี่ยน field custname เป็น utf8<===
+#mysql -uroot -ppassword
+mysql>use goldfish;
+mysql>ALTER TABLE `customer` MODIFY COLUMN `custname` VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_general_ci;
+mysql>exit;
+
+                                                           ===>export database<===
+  mysqldump -uroot -ppassword goldfish > /tmp/gf.sql
+
+                                                          ===>delete database<===
+#mysql -uroot -ppassword
+mysql>use goldfish;
+mysql>delete from customer;
+mysql>exit;
+
+##############################################===>ทำให้ ivr-route <===##########################################
+                                               
+1. Create customer table
+
+#mysql -uroot -ppassword goldfish < customer.sql
+
+2. Add  customer module in Goldfish web gui
+
+Admin->Module->Add module
+
+Name = Customer Management
+Target = customer.php
+Group = Admin
+
+Save
+
+3. Assign module to user as you want
+
+4. #chmod 777 /var/www/html/goldfish/upload/
+    #chmod 777 /var/www/html/goldfish/tmp/
+
+5. copy ivr_route.php to /var/lib/asterisk/agi-bin
+    #chgrp asterisk ivr_route.php
+    #chown asterisk ivr_route.php
+    #chmod +x ivr_route.php
+    
+    test run
+    #./ivr_route.php 1 [enter enter enter]
+
+6. Paste to /etc/asterisk/extensions_custom.conf
+[ivr-route]
+exten => s,1,Noop(IVR Route)
+exten => s,n,AGI(ivr_route.php,${CALLERID(number)})
+exten => s,n,GotoIf($["x${FOUND}" = "x1"]?chk)
+exten => s,n,Noop(Not found agent handle this ${CALLERID(number)}. Route call to Operator)
+exten => s,n,Goto(from-did-direct,3333,1)
+exten => s,n,Hangup
+exten => s,n(chk),GotoIf($["x${READY}" = "x1"]?agent)
+exten => s,n,Noop(Agent ${AGENTID} not ready. Route call to Operator.)
+exten => s,n,Goto(from-did-direct,3333,1)
+exten => s,n,Hangup
+exten => s,n(agent),Noop(Route call to Agent ${AGENTID} , Phone ${LOGINPHONE}.)
+exten => s,n,Goto(from-did-direct,${LOGINPHONE},1)
+
+3333 is operator number.
+
+reload asterisk
+
+7. Update customer data to database
+    Create text file
+    Format:
+    agentid|phoneno|custname|details
+    Ex.
+    1001|081xxxxxxx|abc|xyz
+    1001|081xxxxxxx|aaa|xxx
+
+    Admin->Customer Management->browse file ->Import
+    File ที่ import ต้องเป็น utf-8
+
+8. Test route 
+    Test inbound call using 081xxxxxxx phone number. Call will route to agent 1001.
+
+                                                     ==>การอัพเดทโมดูล Goldfish<===
+unzip copy ไปแทนตัวเก่าใน /var/www/html/goldfish
+
+#####3สร้าง module ใหม่#######
+
+Admin->Module->Add Module
+
+1. Name = Extension Inbound Summary
+    Target = report/agent_e_inbound_summary_rpt.php
+     Group = Report
+    
+    Save
+
+2. Name = Extension Inbound By Date
+    Target = report/agent_e_inbound_summary_by_date_rpt.php
+     Group = Report
+
+    Save
+
+Assign new module to user
+
+Admin->User Member -> <user>
+
+ย้าย module ที่ต้องการ ไปด้านขวา
+
+Save
+
+Reload web
+
+
+                                                ==>ทำให้ amportal และ goldfish start อัตโนมัติ<===
+#vim /etc/rc.d/rc.local
+
+เพิ่ม 2 บรรทัดนี้ต่อท้าย
+
+/usr/local/sbin/amportal start
+/usr/goldfish/goldfish start
+
+=============move.sh=============== 
+1. install lame
+    -untar lame-3.98.4.tar.gz
+    #./configure
+    #make
+    #make install
+
+ 2. copy move.sh to /usr/goldfish/script/ (only this directory)
+   chmod +x /usr/goldfish/script/move.sh
+
+ 3. copy /modules/* to /var/www/html/admin/modules/
+     apply FreePBX
+
+ 4. copy /www/* to /var/www/html/goldfish/
+
+##############################################===>License Goldfish <===##########################################
+Copy license.xml and public.rsa to /etc
+update goldfish.jar to version 1.3
+reboot
+comname กับ hosts ต้องตรงกัน
+##############################################===>Change mode tmp folder to 0777...Failed.<===##########################################
+Change mode tmp folder to 0777...Failed.
+Change mode agents folder to 0777...Failed.
+
+chmod 777 /var/www/html/goldfish/tmp
+chmod 777 /var/www/html/goldfish/agents
+##############################################===>ไม่บันทึกเสียง<===##########################################
+ให้ Copy ไฟล์ /var/www/html/admin/modules/core/functions.inc.php เข้าไปใหม่
+แล้ว reload  freepbx   
+##############################################===>ปรับเสียง<===##########################################
+แก้ไขไฟล์ /etc/asterisk/extensions_additions.conf
+
+[macro-user-callerid]
+เพิ่ม
+exten => s,1,Set(VOLUME(TX)=10)
+exten => s,n,Set(VOLUME(RX)=10)
+
+
+##############################################===>Convert file<===##########################################
+
+rasterisk -x "file convert /tmp/file_in.format /tmp/file_out.format"
+
+##############################################===>Debug not connect DATAbase<===##########################################
+
+#mysql -u root -p -h localhost
+
+
+##############################################===>กำหนดสิทธิ์<===##########################################
+
+chown -R xxx:ggg ffff		; xxx = owner : ggg = group : fff = file or folder or script
+
+
+##########################################################################################################################
+
+vim /etc/sysconfig/network-scripts/ifcfg-eth1
+
+ONBOOT=yes
+
+
+##########################################################################################################################
+
+vim /etc/httpd/conf/httpd.conf
+
+Listen 80
+Listen 81
+
+service httpd restart
+
+#########################################################################################################################
+
+/usr/goldfish/goldfish restart
+
+
+
+
+########################################################################################################################
+
+vi /usr/goldfish/log/debug.log
+
+
+
+#############################################################################เพิ่มเสียง############################################################################################################
+
+
+1.Create variables in database
+mysql -u root -p -h localhost
+mysql>use asterisk;
+mysql>INSERT INTO globals(variable,value) VALUES('VOICE_TX','5');
+mysql>INSERT INTO globals(variable,value) VALUES('VOICE_RX','5');
+
+2.Replace attached file ( page.general.php, functions.inc.php ) in /var/www/html/admin/modules/core/
+3.Open FreePBX->General Setting->Volumn will see TX and RX.
+4.Apply                                                     
+
+
+
+#################################################################Mount HDD#################################################################################################################
+Mount HDD
+
+fdisk -l
+
+fdisk /dev/sda
+Manage partitions
+
+mkfs.ext3 /dev/sda1
+Format File System for Partitions to be created
+
+
+mount -t ext3 /dev/sda1 /voice
+
+
+vim /etc/fstab
+/dev/sda1               /voice                  ext3    defaults        0 2
+
+Server1
+mount.cifs //192.168.100.104/Backup1 /mnt/voice/
+
+Server2
+mount.cifs //192.168.100.104/BackupVoice /mnt/voice/
+
+
+PCJ-Server1
+mount.cifs //192.168.0.245/2013 /mnt/voice/2013 -o  username=osd,password=Oadmin9
+
+
+#############################################################qualify = ' no '###################################################################################################################
+
+
+mysql -p
+mysql> use asterisk;
+mysql> update sip set data = 'no' where keyword = 'qualify';
+
+
+#############################################################tshark#######################################################################################################################
+
+
+tshark -i eth0 port 5060 -w /tmp/testeth0.cap
+tshark -i eth1 port 5060 -w /tmp/testeth1.cap
+
+save filter
+
+type ' sip.to.user== (number_filter) '
+mark packet
+save as => select packet range => mark packet
+
+
+tshark host 192.168.0.18 and port 5060
+
+
+#############################################################set shutdown#################################################################################################################
+
+
+
+
+
+
+
+######################################################################################################################################################################################
+
+Support 2 queue for 1 Supv.
+mysql>use goldfish;
+mysql>ALTER TABLE `userqueue` DROP PRIMARY KEY, ADD PRIMARY KEY  USING BTREE(`username`, `queueid`);
+
+
+#################################################################################ซ่อนไฟล์เสียง############################################################################################
+
+mysql -ppassword
+use goldfish
+ALTER TABLE `agenttraffic` ADD COLUMN `lock1` INTEGER UNSIGNED DEFAULT 0 AFTER `star`;
+exit
+
+lock0 , lock1
+ในไฟล์ image
+แล้วก็ lock.php , rec.php
+
+/var/www/html/goldfish/common
+
+functions.inc.php & staring.js
+
+***for hardphone change
+
+goldfish.config
+
+
+########################################################################agent_exten######################################################################################################
+
+CREATE TABLE `agent_exten` (
+  `agentid` int(10) unsigned NOT NULL,
+  `exten` varchar(50) NOT NULL default "",
+  `updatedon` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`agentid`)
+);
+
+
+
+########################################################################Delete_live######################################################################################################
+
+
+
+mysql -ppassword
+use goldfish;
+select * from live;
+
+delete from live where agentid = (same agentid) ;
+
+
+
+####################################################################################################################################################################################
+
+tshark auto
+
+0 8 24 10 * /usr/sbin/tshark -i eth1 -t a -a duration:3605 -w /tmp/eth1-24-10-55_08.cap
+0 9 24 10 * /usr/sbin/tshark -i eth1 -t a -a duration:3605 -w /tmp/eth1-24-20-55_09.cap
+0 10 24 10 * /usr/sbin/tshark -i eth1 -t a -a duration:3605 -w /tmp/eth1-24-10-55_10.cap
+0 11 24 10 * /usr/sbin/tshark -i eth1 -t a -a duration:3605 -w /tmp/eth1-24-10-55_11.cap
+0 12 24 10 * /usr/sbin/tshark -i eth1 -t a -a duration:3605 -w /tmp/eth1-24-10-55_12.cap
+0 13 24 10 * /usr/sbin/tshark -i eth1 -t a -a duration:3605 -w /tmp/eth1-24-10-55_13.cap
+0 14 24 10 * /usr/sbin/tshark -i eth1 -t a -a duration:3605 -w /tmp/eth1-24-10-55_14.cap
+0 15 24 10 * /usr/sbin/tshark -i eth1 -t a -a duration:3605 -w /tmp/eth1-24-10-55_15.cap
+0 16 24 10 * /usr/sbin/tshark -i eth1 -t a -a duration:3605 -w /tmp/eth1-24-10-55_16.cap
+0 17 24 10 * /usr/sbin/tshark -i eth1 -t a -a duration:3605 -w /tmp/eth1-24-10-55_17.cap
+
+
+####################################################################################################################################################################################
+
+Show Real IP
+
+wget -qO - http://cfaj.freeshell.org/ipaddr.cgi
+
+./ipaddr.cgi
+
+
+
+
+####################################Extract file############################################
+
+tar -xvf file.tar
+tar -xzvf file.tar.gz
+tar -xjvf file.tar.bz2
+
+######################################login#############################################
+
+vim /etc/amportal.conf
+
+AUTHTYPE=none => AUTHTYPE=database
+
+
+################################Compress&Uncompress######################################
+
+Compress
+tar -cvzf scheduler.tar.gz scheduler
+
+
+Uncompress
+tar -xvzf scheduler.tar.gz
+
+#####################################Rename File################################################
+
+mv filename filename-new
+
+mv -i filename filename-new
+; mv : overwrite `filename-new'? y
+
+
+####################################Show Process#################################################
+;Show Process All
+
+ps -A
+
+#####################################Kill Process##################################################
+;Kill Process
+
+kill -9 PID			;PID = Process ID
+
+######################################TShark IP Address##################################################
+
+tshark -i eth0 port 5060 -t a -R "ip.addr==180.180.123.175" -w /tmp/1560106.cap
+
+
+####################################Insert Data For Table live################################################
+
+
+ INSERT INTO live VALUES (5555,5555,5555,0,5555,'127.0.0.1','2013-11-08 09:45:48','2013-11-08 09:45:48');
+
+####################################################################################################
+
+#####################################ลบไฟล์เสียงใน Elastix##################################################
+
+find /var/spool/asterisk/monitor/ -name *.wav -mtime +30 -exec rm {} \; >/dev/null 2>/dev/null
+
+ในตัวอย่างจะลบไฟล์ .wav ทุกไฟล์ ยกเว้นไฟล์ที่สร้างในระยะเวลา 30 วัน
+
+###################################find เช็คขนาด wav file ใน folder #####################################################
+
+du -hc `find /voice/2018/01/17/ -name "*.wav" ` | tail -1
+
+
+###########################################Spec info###################################################
+
+ดู SPEC ของ CPU - 
+
+cat /proc/cpuinfo
+
+ดูจำนวน RAM ของเครื่อง
+
+free
+cat /proc/meminfo
+
+ดู Harddisk ต้องดูเองจาก /proc/scsi หรือ /proc/ide
+
+####################################################################################################
+
+##################################Change Textmode to Graphicmode############################################
+
+vim /etc/inittab
+
+change id:3:initdefault:
+to        id:5:initdefault:
+
+####################################################################################################
+
+##################################Show Extension Recording Asterisk############################################
+
+ mysql -ppassword asterisk -e "select * from sip where keyword like 'record%' and data != 'Always' order by id asc "|more
+
+####################################################################################################
+
+######################################### Clear Full.* ###################################################
+
+find /var/log/asterisk \( -name 'full.*' -o -name 'queue_log.*' -o -name 'event_log.*' \) -daystart -mtime +30 -exec rm -f '{}' \;
+
+####################################################################################################
+
+#######################################Clear Debug.log###################################################
+
+find /usr/goldfish/log \( -name 'debug.log.*' \) -daystart -mtime +60 -exec rm -f '{}' \;
+find /usr/dcall/log/ \( -name 'debug.log.*' \) -daystart -mtime +30 -exec rm -f '{}' \;
+
+####################################################################################################
+
+##################################Show Extension callgroup Asterisk############################################
+
+mysql -p asterisk -e "select * from sip where keyword like 'callgroup' order by id asc;"
+
+####################################################################################################
+
+##################################Show Extensions Recording#################################################
+
+ mysql -ppassword asterisk -e "select * from sip where keyword like 'record_in' order by id asc;"
+ mysql -ppassword asterisk -e "select * from sip where keyword like 'record_out' order by id asc;"
+
+####################################################################################################
+
+####################################Show Login Goldfish###################################################
+
+mysql -uroot -p goldfish -e "select * from live order by agentid asc;"
+
+####################################################################################################
+
+####################################Exsample RSYNC#####################################################
+
+
+0 17 * * * /usr/bin/rsync -avprz /voice/2014/06/ /mnt/voice/2014/06/
+
+
+#################################### เพิ่ม Max_Connections ชั่วคราว ##################################################
+
+SET GLOBAL max_connections = 200;
+
+#######################################################################################################
+
+############################Increase the mysql connections#############################################
+
+vim /etc/my.cnf
+
+[mysqld]
+
+set-variable=max_connections=1000 <=====Add Command
+
+#######################################################################################################
+
+#######################################show status#####################################################
+
+show status like '%onn%';
+
+show global variables;
+
+###################################################################################################
+
+######################################Check Databases all################################################
+
+mysqlcheck -c  -u root -p --all-databases
+
+##################################################################################################
+
+####################################Check Database & Repair##############################################
+
+mysqlcheck -u root -p --auto-repair -c -o goldfish
+
+mysqlcheck -u root -p --auto-repair --check --optimize --all-databases
+
+##################################################################################################
+
+[ext-trunk-TOT]
+exten => s,1,Set(OUTNUM=${FROM_DID})
+exten => s,n,Goto(ext-trunk,3,1)
+exten => s,n,hangup
+
+##################################################################################################
+check digit
+
+exten => _X.,1,Noop(Deleting: ${BLKVM_OVERRIDE} ${DB_DELETE(${BLKVM_OVERRIDE})})
+exten => _X.,n,Set(__NODEST=)
+exten => _X.,n,Noop(${EXTEN}Digit-DTMF)
+exten => _X.,n,Goto(from-did-direct,${EXTEN},1)
+
+##################################################################################################
+
+##################################เปิด play file เสียง Google Chrome###########################################
+chrome://flags/#enable-npapi
+
+เปิดการใช้งานปลั๊กอิน NPAPI #enable-npapi
+
+##################################################################################################
+
+GRANT ALL PRIVILEGES ON *.* TO root@"%" IDENTIFIED BY 'password' WITH GRANT OPTION;
+
+flush privileges;
+
+##################################find text from file#####################################################
+
+find /(path) -type f -exec grep -H 'text-to-find-here' {} \;
+
+##################################################################################################
+
+#####################################fdisk command###################################################
+
+Command (m for help): m
+Command action
+   a   toggle a bootable flag
+   b   edit bsd disklabel
+   c   toggle the dos compatibility flag
+   d   delete a partition
+   l   list known partition types
+   m   print this menu
+   n   add a new partition
+   o   create a new empty DOS partition table
+   p   print the partition table
+   q   quit without saving changes
+   s   create a new empty Sun disklabel
+   t   change a partition's system id
+   u   change display/entry units
+   v   verify the partition table
+   w   write table to disk and exit
+   x   extra functionality (experts only)
+
+##################################################################################################
+
+######################################TimeGroup Details################################################
+
+mysql -uroot -p asterisk -e "select * from timegroups_details order by id asc;"
+
+#######################################show Description################################################
+
+mysql -uroot -p asterisk -e "SELECT * FROM timegroups_groups tg JOIN timegroups_details td ON tg.id = td.timegroupid ORDER BY tg.id ;"
+
+##################################################################################################
+
+######################################Reboot force####################################################
+
+reboot -n -f 
+
+##################################################################################################
+
+######################################Auto Repair Tables################################################
+
+mysqlcheck -uroot -p --auto-repair -c <database-name>
+
+##################################################################################################
+
+wire shark
+
+io graph
+
+filter	protocal and 
+	rtp and ip.addr==<IP Address>
+
+404	Not found
+405	Method not found	*DTMF
+415	Unsupport Media	*Codec
+
+###################################Backtrack INVITE Message##############################################
+
+cd /pentest/voip/sipp  + Enter
+./sipp.uas.192.168.20.100 + Enter
+
+
+################################difference between 2 directories#############################################
+
+diff -q dir1 dir2
+
+diff -r dir1 dir2 | grep dir1 | awk '{print $4}' > difference1.txt
+
+diff -r dir1 dir2 shows which files are only in dir1 and those only in dir2
+
+diff -r dir1 dir2 | grep dir1 shows which files are only in dir1
+
+Finally use awk to print only filename.
+
+#############################################################################################################
+
+############################################Check Mount Drive################################################
+
+vim /etc/fstab
+
+#############################################################################################################
+
+###########################################Configure DNS#####################################################
+
+vim /etc/resolv.conf
+
+nameserver 8.8.8.8
+
+############################################################################################################
+
+##########################################Telnet-Server#####################################################
+
+copy rpm -ivh telnet-0.17-48.el6.x86_64.rpm to /usr/src/d-call_*.*.*/source/
+
+cd /usr/src/d-call_2.0.5/source/
+
+rpm -ivh telnet-0.17-48.el6.x86_64.rpm
+
+############################################################################################################
+
+######################################## History Mount #####################################################
+
+history |grep mount
+
+##############################################Mount Driver Windows #########################################
+
+mount.cifs //192.168.100.104/server1  /mnt/backup/voice -o  username=admin,password=
+mount.cifs //192.168.100.104/server2  /mnt/backup/voice -o  username=admin,password=
+
+mount.cifs  //10.0.0.245/VoiceTrade41 /mnt/backup/voice -o  username=admin,password=
+mount.cifs //10.0.0.245/VoiceTrade45  /mnt/backup/voice -o  username=admin,password=
+mount.cifs //10.0.2.4/Voice Korat  /mnt/backup/voice -o  username=admin,password=
+mount.cifs //10.0.6.4/Voice_AR  /mnt/backup/voice -o  username=admin,password=
+
+
+
+############################################################################################################
+
+tshark -i eth1 host 192.168.8.26 -z rtp,streams
+
+tshark -i eth0 -z rtp,streams
+
+############################################################################################################
+
+#Start NAT
+sysctl -w net.ipv4.ip_forward=1
+service iptables start
+
+#Stop NAT
+sysctl -w net.ipv4.ip_forward=0
+service iptables stop
+
+#############################################################################################################
+
+system to hardware clock
+
+hwclock --systohc
+-or-
+hwclock -w
+
+#############################################################################################################
+
+force reboot
+echo 1 > /proc/sys/kernel/sysrq
+echo b > /proc/sysrq-trigger
+
+#############################################################################################################
+
+forced Shutdown
+echo 1 > /proc/sys/kernel/sysrq
+echo o > /proc/sysrq-trigger
+
+#############################################################################################################
+
+Remote Shutdown
+
+net rpc shutdown -r -S <IP Address> -U <User PC>
+
+#############################################################################################################
+
+/usr/bin/rsync -avprz /voice/2015/01/ /mnt/voice/2015/01/
+
+rm -rf /mnt/voice/2015/01/05/
+
+#######################################du folder############################################################
+
+
+du /voice/2016/ -h |grep "[0-9]G"
+
+
+############################################################################################################
+
+################################find file < 1000MB###########################################################
+
+find /voice/2016/05/ -type f -size +1000000k -exec ls -lh {} \; | awk '{ print $9 ": " $5 }'
+find /voice/2016/05/ -type f -size +1000000k -exec ls -lh {} \; | awk '{ print $9 ": " $5 }'
+
+############################################################################################################
+
+##################################Update Column#############################################################
+
+UPDATE time_holiday SET i_start = '29400',o_start = '29400' WHERE active_out = '1';
+
+############################################################################################################
+
+
+########################mysql select Call out of time#############################
+
+SELECT hour(ringdate) ,ringdate from agenttraffic WHERE ringdate between '2017-01-01 00:00:00' and '2017-05-19 00:00:00' and hour(ringdate) BETWEEN 20 and 23
+
+
+####################### Mysql Delete agent in table live ##########################
+
+select * from live where agentid in(select agentid from agentqueue where queueid = '83001');
+
+delete from live where agentid in(select agentid from agentqueue where queueid = '83001');
+
+
+####################### Edit PCAP #################################################
+
+editcap -A '2017-12-21 13:00:00' -B '2017-06-01 13:30:00' cap_20171221_1300.pcap cap_20171221_1300_edit.pcap
+
+####################### Reset Password Mysql ######################################
+
+MySQL 5.7.5 and older ---> SET PASSWORD FOR 'root'@'localhost' = PASSWORD('');
+
+For MySQL 5.7.6 ---> ALTER USER 'root'@'localhost' IDENTIFIED BY 'new_password';
+
+# service mysql stop
+# sudo mysqld_safe --skip-grant-tables --skip-networking &
+# mysql -u root
+# update user set password=PASSWORD("new-password") where User='root';
+# flush privileges;
+
+####################### Remote Mysql Any Where ############################################################
+
+GRANT ALL ON *.* to root@'%' IDENTIFIED BY 'password';
+
+####################### Query agent call from New Dcall ###################################################
+
+select agentid, name, count(*) from dialtraffic left join agents on dialtraffic.agentid = agents.id group by agentid;
+
+#############################################################################################################
+
+SELECT
+groups.`name`,
+group_visibilities.username,
+agents.`name`
+FROM
+groups
+INNER JOIN group_visibilities ON group_visibilities.groupid = groups.id
+INNER JOIN users ON users.username = group_visibilities.username
+LEFT JOIN agents ON users.username = agents.id
+
+##########################################################################################################
+
+################################# TCPDUMP ################################################################
+tcpdump -nqt -s 0 -A -i eth0 port 5060
+tcpdump -nq -s 0 -i eth0 -w /tmp/dump.pcap port 5060
+tcpdump -nq -s 0 -i eth0 -G3600 -w /tmp/trace/sip-%F--%H-%M-%S.pcap port 5060
+nohup tcpdump -nq -s 0 -i eth0 -G3600 -w /tmp/trace/sip-%F--%H-%M-%S.pcap port 5080 or port 5060 &
+
+
+##########################################################################################################
