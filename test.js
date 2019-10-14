@@ -20,3 +20,4 @@ function sum(answer, value){
 
 sum('Pongsakon');
 console.log('HelloWorld');
+console.log('HelloWorld2');
