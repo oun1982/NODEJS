@@ -19,3 +19,4 @@ function sum(answer, value){
 }
 
 sum('Pongsakon');
+console.log('HelloWorld');
