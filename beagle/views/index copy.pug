@@ -1,0 +1,52 @@
+doctype html
+html(lang="en")
+head
+    title Hi
+    script(src="../js/jquery.min.js")
+    link(href='../css/bootstrap.min.css', rel='stylesheet')
+    script.
+        $(document).ready(function(){
+        $("p").click(function(){
+        $(this).hide();
+        });
+        });
+    script.
+        var something = function() {
+        console.log('something')
+        }
+body
+    p If you click on me, I will disappear.
+    p Click me away! 
+    p Click me too!
+    hr
+    
+    <div class="container">
+    h2 Button Styles
+    button(type="button" class="btn btn-primary" onclick='something()') submit
+
+block content
+  .main.container
+    .row
+      .col-md-6.col-md-offset-3
+        h1.display-4.m-b-2 Sign Up
+
+        // register form
+        form(method='POST' action='/register')
+          div.form-group
+            label(for='name') Name:
+            input#name.form-control(type='text', placeholder='first and last' name='name')
+          div.form-group
+            label(for='email') Email:
+            input#email.form-control(type='email', placeholder='name@email.com' name='email')
+          div.form-group
+            label(for='favoriteBook') Favorite Book:
+            input#favoriteBook.form-control(type='text', placeholder='title of book' name='favoriteBook')
+          div.form-group
+            label(for='pw') Password:
+            input#pw.form-control(type='password' name='password')
+          div.form-group
+            label(for='pw2') Confirm Password:
+            input#pw2.form-control(type='password' name='confirmPassword')
+          button.btn.btn-primary(type='submit') Sign up
+    </div>      
+            

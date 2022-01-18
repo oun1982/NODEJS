@@ -1,0 +1,29 @@
+doctype html
+html(lang="en")
+head
+    title Hi
+    script(src="../js/jquery.min.js")
+    link(href='../css/bootstrap.min.css', rel='stylesheet')
+   
+body
+    
+    <div class="container">
+    h2 Hello
+    
+
+block content
+  .main.container
+    .row
+      .col-md-6.col-md-offset-3
+        h1.display-4.m-b-2 Login
+
+        // Login form
+        form(method='POST' action='/')
+          div.form-group
+            label(for='name') UserName:
+            input#name.form-control(type='text', placeholder='username' ,name='name')
+            label(for='pw') Password:
+            input#pw.form-control(type='password', placeholder='password' ,name='password')
+          button.btn.btn-primary(type='submit') submit
+    </div>      
+            
